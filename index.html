@@ -1,24 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-</head>
-<body>
-  <div id="app">
-    {{ message }}
-  </div>
-  <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
-  <script>
-    const app = new Vue({
-      el: '#app',
-      data: {
-        message: 'Hola Mundo Loco!!!'
-      }
-    })
-  </script>
-  </script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app">
+      <button v-on:click="changeVisibility">Show/Hide</button>
+      <!-- <button @click="changeVisibility">Show/Hide</button> Abreviación v-on:-->
+      <!-- <ul v-if="render"> -->
+      <!-- <ul v-show="render"> Alternative a if (true). Añade display: none por lo que se ve al inspeccionar el DOM -->
+      <!-- <li v-for="(show, index) in tvShows" :key="index"> Abreviación v-bind: -->
+      <!-- <li v-for="(show, index) in tvShows" v-bind:key="index"> -->
+      <!-- <strong>{{ show.name }}</strong>({{ show.seasons }} seasons) -->
+      <!-- </li> -->
+
+      <!-- <app-tv-show
+          v-for="(show, index) in tvShows"
+          :key="index"
+          :name="show.name"
+          :seasons="show.seasons"
+        ></app-tv-show> -->
+      <!-- </ul> -->
+      <tv-show-list v-if="render"></tv-show-list>
+      <div v-else>
+        <!-- <div v-hide="render"> Alternative a ELSE-->
+        <span>No hay datos</span>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.2/vue.js"></script>
+    <script>
+      // PRIMER COMPONENTE (mostrar datos de la app en un componente llamado desde el index.html)
+      Vue.component('app-tv-show', {
+        props: {
+          name: String,
+          seasons: Number,
+        },
+        template: `
+          <li><strong>{{ name }}</strong> ({{ seasons }} seasons)</li>`,
+      });
+
+      // SEGUNDO COMPONENTE (Mostrar la anidación de componentes)
+      Vue.component('tv-show-list', {
+        data: function () {
+          return {
+            tvShows: [
+              {
+                name: 'Game of thrones',
+                seasons: 7,
+              },
+              {
+                name: 'Lost',
+                seasons: 8,
+              },
+              {
+                name: 'Breaking bad',
+                seasons: 4,
+              },
+            ],
+          };
+        },
+        template: `
+          <ul>
+            <app-tv-show
+              v-for="(show, index) in tvShows"
+              :key="index"
+              :name="show.name"
+              :seasons="show.seasons"
+            ></app-tv-show>
+          </ul>
+        `,
+      });
+
+      // COMPONENTES creados para mostrar modificación de datos desde componente hijo usando eventos
+
+      Vue.component('todo-add', {
+        template: `
+          <div>
+            <input type="text" v-model="title"/>
+            <button @click="onClick">Añadir</button>
+          </div>
+        `,
+        data: function () {
+          return {
+            title: null,
+          };
+        },
+        methods: {
+          onClick: function () {
+            this.$emit('newItem', { title: this.title });
+          },
+        },
+      });
+
+      Vue.component('todo-item', {
+        props: ['todo'],
+        template: `
+          <li><strong>{{ todo.title }}</strong></li>
+        `,
+      });
+
+      Vue.component('todo-list', {
+        props: ['todoList'],
+        template: `
+          <ul>
+            <todo-item 
+              v-for="(todo, index) in todoList"
+              :key="index"
+              :todo="todo" 
+            ></todo-item>
+          </ul>
+        `,
+      });
+
+      const app = new Vue({
+        el: '#app',
+        data: {
+          render: true,
+          // tvShows: [
+          //   {
+          //     name: 'Game of thrones',
+          //     seasons: 7,
+          //   },
+          //   {
+          //     name: 'Lost',
+          //     seasons: 8,
+          //   },
+          //   {
+          //     name: 'Breaking bad',
+          //     seasons: 4,
+          //   },
+          // ],
+          todoList: [
+            {
+              title: 'Tarea1',
+              completed: false,
+            },
+            {
+              title: 'Tarea2',
+              completed: false,
+            },
+            {
+              title: 'Tarea3',
+              completed: false,
+            },
+          ],
+        },
+        methods: {
+          changeVisibility: function () {
+            this.render = !this.render;
+          },
+        },
+        template: `
+          <div>
+            <todo-list :todoList="todoList"></todo-list>
+            <todo-add @newItem="addNewItem"></todo-add>
+          </div>
+        `,
+        methods: {
+          addNewItem: function (newItem) {
+            this.todoList.push(newItem);
+          },
+        },
+      });
+    </script>
+  </body>
 </html>
