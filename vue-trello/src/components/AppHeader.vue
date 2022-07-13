@@ -1,7 +1,7 @@
 <template>
   <header>
     <span class="title">Vue Trello</span>
-    <router-link class="btn-header" to="/">Nis paneles</router-link>
+    <router-link class="btn-header" to="/">Mis paneles</router-link>
   </header>
 </template>
 
