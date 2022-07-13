@@ -7,7 +7,7 @@
 
 <script>
 export default {
-  name: "app-head"
+  name: "app-header"
 };
 </script>
 
